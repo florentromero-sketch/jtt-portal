@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🛰 JTT Alliance Management 2.8</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --blue-main:#00eaff;
+  --blue-dark:#062d37;
+  --gold-jtt:#e1b46a;
+  --text-light:#cbe4ef;
+  --bg-dark:#010205;
+}
+body {
+  margin:0;
+  padding:0;
+  font-family:"Orbitron",sans-serif;
+  background:var(--bg-dark);
+  color:var(--text-light);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* --- Animation titre --- */
+@keyframes glowTitle {
+  0%,100%{text-shadow:0 0 6px var(--blue-main),0 0 10px var(--blue-main);}
+  50%{text-shadow:0 0 16px var(--blue-main),0 0 26px var(--blue-main);}
+}
+h1{
+  color:var(--blue-main);
+  animation:glowTitle 3s ease-in-out infinite;
+  font-size:clamp(0.9rem,2.4vw,1.1rem);
+  margin:16px 0;
+  text-align:center;
+  text-transform:uppercase;
+}
+
+/* --- Tableau de bord --- */
+.dashboard{
+  width:92%;
+  max-width:340px;
+  background:rgba(5,15,25,.9);
+  border:1.5px solid var(--blue-main);
+  border-radius:12px;
+  box-shadow:0 0 18px rgba(0,234,255,.25);
+  padding:20px;
+  margin-bottom:18px;
+}
+.section{
+  background:rgba(2,15,20,.7);
+  border-left:3px solid var(--blue-main);
+  border-radius:8px;
+  padding:14px;
+  box-shadow:inset 0 0 8px rgba(0,234,255,.25);
+}
+.section h2{
+  color:var(--gold-jtt);
+  margin:0 0 8px;
+  text-align:center;
+  text-transform:uppercase;
+  text-shadow:0 0 8px var(--blue-main);
+  font-size:0.82rem;
+}
+
+/* --- Jauge --- */
+.jauge-container{
+  width:100%;
+  background:rgba(5,25,30,.4);
+  border:1px solid var(--blue-dark);
+  border-radius:6px;
+  margin:10px 0;
+  height:20px;
+  position:relative;
+  overflow:hidden;
+}
+.jauge-fill{
+  background:linear-gradient(90deg,var(--blue-dark),var(--blue-main));
+  height:100%;
+  width:0%;
+  transition:width 1.2s ease-in-out;
+}
+.jauge-text{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.8em;
+  color:#fff;
+  text-shadow:0 0 6px var(--blue-main);
+}
+
+/* --- Liens --- */
+.submenu{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:8px;
+  margin-top:10px;
+}
+.link{
+  flex:1 1 45%;
+  background:linear-gradient(90deg,var(--blue-dark),var(--blue-main));
+  border-radius:6px;
+  color:#fff;
+  text-align:center;
+  text-decoration:none;
+  padding:8px 10px;
+  font-weight:700;
+  font-size:0.85rem;
+  transition:.25s;
+  box-shadow:0 0 8px rgba(0,234,255,.4);
+}
+.link:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 15px var(--blue-main);
+}
+
+.btn-sync{
+  display:block;
+  margin:10px auto 0;
+  background:none;
+  border:1px solid var(--blue-main);
+  color:var(--gold-jtt);
+  border-radius:5px;
+  padding:5px 10px;
+  font-size:0.8rem;
+  cursor:pointer;
+}
+.btn-sync:hover{
+  background:var(--blue-main);
+  color:#fff;
+  box-shadow:0 0 10px var(--blue-main);
+}
+
+/* --- Responsive --- */
+@media(max-width:600px){
+  .link{flex:1 1 100%;max-width:100%;}
+}
+</style>
+</head>
+
+<body>
+
+<h1>🛰 JTT Alliance Management V2 🛰</h1>
+
+<div class="dashboard">
+  <div class="section">
+    <h2>Feuille : Stats Alliance</h2>
+    <p> Member census tracking. Data auto-updated.</p>
+
+    <div class="jauge-container">
+      <div class="jauge-fill" id="fillBar"></div>
+      <div class="jauge-text" id="fillText">Chargement…</div>
+    </div>
+
+    <p><strong>Membres enregistrés :</strong> 
+       <span id="count">--</span> / <span id="total">--</span>
+    </p>
+
+    <div class="submenu">
+      <a class="link" href="https://forms.gle/VSXaijct8ebQFnYx5" target="_blank">📋 New Registratione</a>
+      <a class="link" href="https://docs.google.com/spreadsheets/d/1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs/edit?gid=483757800#gid=483757800" target="_blank">📊 JTT Data system</a>
+      <a class="link" href="JTT_backup.html" target="_self">🎯 My Personal Link</a>
+    </div>
+
+    <button class="btn-sync" onclick="loadStats()">🔄 Refresh</button>
+  </div>
+</div>
+
+<script>
+const SHEET_ID = "1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs";
+const GID = "1508042555";
+const CSV_URL =
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`;
+
+async function loadStats() {
+  try {
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
+
+    // Nettoyage du CSV (beaucoup de colonnes vides)
+    const rows = text.trim().split("\n").map(r =>
+      r.split(",").map(c => c.replace(/(^"|"$)/g, "").trim())
+    );
+
+    const second = rows[1] || [];
+    const numbers = second.filter(x => /^\d+$/.test(x));
+
+    const current = parseInt(numbers[0] || "0");
+    const total = parseInt(numbers[1] || "1");
+
+    const pct = Math.min(Math.round((current / total) * 100), 100);
+
+    // Mettre à jour la jauge
+    document.getElementById("count").textContent = current;
+    document.getElementById("total").textContent = total;
+    document.getElementById("fillBar").style.width = pct + "%";
+    document.getElementById("fillText").textContent = pct + "% complété";
+
+    console.log("✅ Stats : ", current, "/", total, `(${pct}%)`);
+  } catch (err) {
+    console.error("⚠️ Erreur lors du chargement :", err);
+    document.getElementById("fillText").textContent = "❌ Erreur chargement";
+  }
+}
+
+// Chargement automatique
+loadStats();
+</script>
+
+</body>
+</html>

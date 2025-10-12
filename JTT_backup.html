@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🎯 JTT Member Portal 2.8</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --blue-main:#00eaff;
+  --blue-dark:#062d37;
+  --gold-jtt:#e1b46a;
+  --text-light:#cbe4ef;
+  --bg-dark:#010205;
+}
+body{
+  margin:0;
+  padding:0;
+  font-family:"Orbitron",sans-serif;
+  background:var(--bg-dark);
+  color:var(--text-light);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-height:100vh;
+  padding-top:20px;
+}
+
+/* ---- Glow animation ---- */
+@keyframes glowTitle{
+  0%,100%{text-shadow:0 0 6px var(--blue-main),0 0 10px var(--blue-main);}
+  50%{text-shadow:0 0 14px var(--blue-main),0 0 20px var(--blue-main);}
+}
+h1{
+  color:var(--blue-main);
+  animation:glowTitle 3s ease-in-out infinite;
+  font-size:clamp(0.95rem,2.4vw,1.1rem);
+  margin-bottom:20px;
+  text-align:center;
+  text-transform:uppercase;
+}
+
+/* ---- Container ---- */
+.container{
+  width:92%;
+  max-width:340px;
+  background:rgba(5,15,25,.85);
+  border:1.5px solid var(--blue-main);
+  border-radius:12px;
+  box-shadow:0 0 18px rgba(0,234,255,.25);
+  padding:20px;
+  text-align:center;
+}
+label{
+  display:block;
+  font-size:0.9rem;
+  margin-bottom:8px;
+  color:var(--gold-jtt);
+}
+select{
+  width:100%;
+  padding:8px;
+  border-radius:6px;
+  border:1px solid var(--blue-main);
+  background:rgba(0,30,40,.8);
+  color:#fff;
+  font-family:"Orbitron",sans-serif;
+  font-size:0.9rem;
+  margin-bottom:16px;
+}
+button{
+  padding:10px 20px;
+  border:none;
+  border-radius:6px;
+  font-weight:700;
+  font-family:"Orbitron",sans-serif;
+  font-size:0.9rem;
+  background:linear-gradient(90deg,var(--blue-dark),var(--blue-main));
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 0 8px rgba(0,234,255,.4);
+  transition:.3s;
+}
+button:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 15px var(--blue-main);
+}
+#status{
+  margin-top:12px;
+  font-size:0.8rem;
+  color:var(--gold-jtt);
+}
+a.back{
+  display:inline-block;
+  margin-top:18px;
+  color:var(--blue-main);
+  text-decoration:none;
+  font-size:0.8rem;
+}
+a.back:hover{text-decoration:underline;}
+</style>
+</head>
+
+<body>
+
+<h1>🎯 JTT Member Portal V2 🎯</h1>
+
+<div class="container">
+  <label for="playerSelect">Select your name:</label>
+  <select id="playerSelect">
+    <option value="">⏳ Loading members...</option>
+  </select>
+
+  <button id="openBtn" disabled>🔗 Open my private link</button>
+
+  <div id="status">Connecting to Google Sheet...</div>
+
+  <a href="index.html" class="back">⬅️ Back to Dashboard</a>
+</div>
+
+<script>
+const SHEET_ID = "1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs";
+const GID = "1784610663";
+const CSV_URL =
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`;
+
+const select = document.getElementById("playerSelect");
+const openBtn = document.getElementById("openBtn");
+const status = document.getElementById("status");
+
+async function loadPlayers(){
+  try{
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
+
+    const rows = text.trim().split("\n").map(r =>
+      r.split(",").map(c => c.replace(/(^"|"$)/g,"").trim())
+    );
+
+    const players = [];
+    for(let i=1;i<rows.length;i++){
+      const name = rows[i][0];
+      const link = rows[i][1];
+      if(name && /^https?:\/\//.test(link)){
+        players.push({name,link});
+      }
+    }
+
+    select.innerHTML = '<option value="">-- Select your name --</option>';
+    players.forEach(p=>{
+      const option = document.createElement("option");
+      option.value = p.link;
+      option.textContent = p.name;
+      select.appendChild(option);
+    });
+
+    if(players.length>0){
+      status.textContent = `✅ ${players.length} links loaded`;
+    }else{
+      status.textContent = "⚠️ No valid links found in player_links sheet";
+    }
+
+    openBtn.disabled = false;
+  }catch(e){
+    console.error("Sheets Error:", e);
+    status.textContent = "❌ Connection error";
+  }
+}
+
+openBtn.addEventListener("click",()=>{
+  const link = select.value;
+  if(link) window.open(link,"_blank");
+  else alert("Please select your name first!");
+});
+
+loadPlayers();
+</script>
+
+</body>
+</html>
