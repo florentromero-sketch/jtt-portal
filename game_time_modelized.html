@@ -71,7 +71,6 @@
 </style>
 </head>
 <body>
-
 <h1>⚙️ Game Time Modelized – Brother in Arm + Sum War Power</h1>
 
 <div class="widget">
@@ -80,22 +79,23 @@
     <button class="tab" id="voidBtn">VOID</button>
   </div>
   <canvas id="chart"></canvas>
-  <div class="summary" id="summary"></div>
+  <div class="summary" id="summary">Chargement des données...</div>
 </div>
 
 <script>
-const ctx = document.getElementById('chart').getContext('2d');
-const D = { weekly:{power:[],players:[]}, void:{power:[],players:[]} };
+// === Base ===
+const ctx=document.getElementById('chart').getContext('2d');
+const D={weekly:{power:[],players:[]}, void:{power:[],players:[]}};
 
-// — Gradients
-const gradPower = ctx.createLinearGradient(0,0,0,300);
-gradPower.addColorStop(0,"rgba(0,239,255,0.4)");
-gradPower.addColorStop(1,"rgba(0,239,255,0)");
-const gradPlayers = ctx.createLinearGradient(0,0,0,300);
-gradPlayers.addColorStop(0,"rgba(25,179,254,0.4)");
-gradPlayers.addColorStop(1,"rgba(25,179,254,0)");
+// === Gradient + couleurs boostées ===
+const gradPower=ctx.createLinearGradient(0,0,0,300);
+gradPower.addColorStop(0,"rgba(0,255,255,0.25)");
+gradPower.addColorStop(1,"rgba(0,155,255,0)");
+const gradPlayers=ctx.createLinearGradient(0,0,0,300);
+gradPlayers.addColorStop(0,"rgba(179,136,255,0.25)");
+gradPlayers.addColorStop(1,"rgba(179,136,255,0.05)");
 
-const chart = new Chart(ctx, {
+const chart=new Chart(ctx,{
   type:'line',
   data:{
     labels:Array.from({length:24},(_,i)=>`${i}h`),
@@ -103,25 +103,27 @@ const chart = new Chart(ctx, {
       {
         label:"💪🌐 Sum War Power (M)",
         data:[],
-        borderColor:'#00eaff',
+        borderColor:'#00ffee',
         backgroundColor:gradPower,
-        borderWidth:2,
+        borderWidth:3,
         fill:true,
         tension:0.35,
-        pointRadius:3,
-        pointBackgroundColor:'#00eaff',
+        pointRadius:4,
+        pointHoverRadius:6,
+        pointBackgroundColor:'#00ffe0',
         yAxisID:'y'
       },
       {
         label:"👥 Brothers in Arm (Players)",
         data:[],
-        borderColor:'#19b3fe',
+        borderColor:'#b388ff',
         backgroundColor:gradPlayers,
         borderWidth:2,
         fill:true,
         tension:0.35,
         pointRadius:3,
-        pointBackgroundColor:'#19b3fe',
+        pointHoverRadius:5,
+        pointBackgroundColor:'#b388ff',
         yAxisID:'y1'
       }
     ]
@@ -132,48 +134,44 @@ const chart = new Chart(ctx, {
     animation:{duration:800,easing:'easeInOutQuart'},
     plugins:{
       legend:{labels:{color:'#00eaff',font:{size:11}}},
-      tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y}`}}
+      tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)}`}}
     },
     scales:{
       y:{
-        type:'linear',
-        position:'left',
-        beginAtZero:true,
-        min:0,
+        type:'linear',position:'left',beginAtZero:true,min:0,
         title:{text:'Power (M)',display:true,color:'#00ffff'},
         ticks:{
-          callback:v=>{
-            if(v>=1_000_000) return (v/1_000_000).toFixed(0)+' M';
-            return v;
-          },
+          callback:v=>v>=1_000_000?(v/1_000_000).toFixed(0)+' M':v,
           color:'#00ffff'
         },
         grid:{color:'rgba(0,255,255,0.08)',tickLength:0}
       },
       y1:{
-        type:'linear',
-        position:'right',
-        beginAtZero:true,
-        min:0,
+        type:'linear',position:'right',beginAtZero:true,min:0,
         title:{text:'Players',display:true,color:'#b388ff'},
         ticks:{stepSize:10,color:'#b388ff'},
         grid:{drawOnChartArea:false}
       },
-      x:{
-        ticks:{color:'#5dd9ff'},
-        grid:{color:'rgba(0,255,255,0.08)',tickLength:0}
-      }
+      x:{ticks:{color:'#5dd9ff'},grid:{color:'rgba(0,255,255,0.08)',tickLength:0}}
     }
   }
 });
 
-// — Résumé dynamique
+// === Heures & résumé ===
 const summary=document.getElementById('summary');
+function currentHourIndexUTC0(){return new Date().getUTCHours()%24;}
 function updateSummary(type){
-  const totalP=D[type].power.reduce((a,b)=>a+b,0);
-  const totalB=D[type].players.reduce((a,b)=>a+b,0);
-  summary.textContent=`💪🌐 Total Power : ${(totalP/1e6).toFixed(1)} M ⚡ – 👥 Active Players : ${totalB}`;
+  const h=currentHourIndexUTC0();
+  const p=D[type].power[h]||0;
+  const b=D[type].players[h]||0;
+  summary.textContent=`🕘 ${h}h UTC • 💪 Power : ${p.toFixed(1)} M ⚡ – 👥 Players : ${b}`;
+  // highlight point courant
+  chart.data.datasets.forEach(ds=>{
+    ds.pointRadius=ds.data.map((_,i)=>i===h?6:3);
+  });
 }
+
+// --- Switch/update ---
 function switchData(type){
   chart.data.datasets[0].data=D[type].power;
   chart.data.datasets[1].data=D[type].players;
@@ -181,19 +179,19 @@ function switchData(type){
   updateSummary(type);
 }
 
-// — Animation pulsation
+// === Animation glow ===
 let pulse=0;
 function animate(){
   pulse+=0.04;
   const glow=0.5+Math.sin(pulse)*0.5;
-  chart.data.datasets[0].borderColor=`rgba(0,239,255,${0.4+glow*0.3})`;
-  chart.data.datasets[1].borderColor=`rgba(25,179,254,${0.4+glow*0.2})`;
+  chart.data.datasets[0].borderColor=`rgba(0,255,255,${0.55+glow*0.3})`;
+  chart.data.datasets[1].borderColor=`rgba(179,136,255,${0.55+glow*0.3})`;
   chart.update('none');
   requestAnimationFrame(animate);
 }
 animate();
 
-// === Google Sheets
+// === Google Sheets ===
 async function fetchSheetData(gid){
   const sheetId='1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs';
   const rangePlayers='C127:Z127';
@@ -201,7 +199,8 @@ async function fetchSheetData(gid){
 
   async function fetchRange(range){
     const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}&range=${range}`;
-    const res=await fetch(url); const txt=await res.text();
+    const res=await fetch(url);
+    const txt=await res.text();
     const json=JSON.parse(txt.substring(47).slice(0,-2));
     return json.table.rows[0].c.map(c=>{
       if(!c||c.v===null)return 0;
@@ -212,14 +211,15 @@ async function fetchSheetData(gid){
 
   try{
     const [players,power]=await Promise.all([fetchRange(rangePlayers),fetchRange(rangePower)]);
-    console.log(`✅ gid=${gid}: ${players.length} players, ${power.length} powers`);
+    console.log(`✅ gid=${gid}: ${players.length} players, ${power.length} power`);
     return {players,power};
   }catch(e){
-    console.error('Erreur Sheets',e);
+    console.error('Erreur Sheets:',e);
     return {players:[],power:[]};
   }
 }
 
+// === Load ===
 async function loadJTTData(){
   const [weekly,voidD]=await Promise.all([
     fetchSheetData(0),
@@ -227,20 +227,20 @@ async function loadJTTData(){
   ]);
   if(Math.max(...weekly.power)>1000) weekly.power=weekly.power.map(v=>v/1_000_000);
   if(Math.max(...voidD.power)>1000) voidD.power=voidD.power.map(v=>v/1_000_000);
-  D.weekly=weekly;
-  D.void=voidD;
-  // attente pour éviter le -1 provisoire
+  D.weekly=weekly; D.void=voidD;
   setTimeout(()=>switchData('weekly'),200);
 }
 loadJTTData();
 
-// — Tabs
-document.getElementById('weeklyBtn').onclick=()=>{
+// === Onglets ===
+const weeklyBtn=document.getElementById('weeklyBtn');
+const voidBtn=document.getElementById('voidBtn');
+weeklyBtn.onclick=()=>{
   weeklyBtn.classList.add('active');
   voidBtn.classList.remove('active');
   switchData('weekly');
 };
-document.getElementById('voidBtn').onclick=()=>{
+voidBtn.onclick=()=>{
   voidBtn.classList.add('active');
   weeklyBtn.classList.remove('active');
   switchData('void');
