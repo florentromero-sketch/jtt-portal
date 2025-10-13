@@ -110,7 +110,8 @@ const chart = new Chart(ctx, {
         fill:true,
         tension:0.35,
         pointRadius:3,
-        pointBackgroundColor:'#00eaff'
+        pointBackgroundColor:'#00eaff',
+        yAxisID:'y'
       },
       {
         label:"👥 Brothers in Arm (Players)",
@@ -134,60 +135,47 @@ const chart = new Chart(ctx, {
       legend:{labels:{color:'#00eaff',font:{size:11}}},
       tooltip:{callbacks:{label:(c)=>`${c.dataset.label}: ${c.parsed.y}`}}
     },
-scales: {
-  y: {
-    type: 'linear',
-    position: 'left',
-    title: {
-      text: 'Power (M)',
-      display: true,
-      color: '#00ffff'
-    },
-    ticks: {
-      // Affiche les millions de manière lisible
-      callback: value => {
-        if (value >= 1_000_000) return (value / 1_000_000).toFixed(0) + ' M';
-        return value;
+    scales:{
+      y:{
+        type:'linear',
+        position:'left',
+        title:{text:'Power (M)',display:true,color:'#00ffff'},
+        ticks:{
+          callback:value=>{
+            if(value>=1_000_000) return (value/1_000_000).toFixed(0)+' M';
+            return value;
+          },
+          color:'#00ffff'
+        },
+        grid:{color:'rgba(0,255,255,0.1)'},
+        suggestedMin:0,
+        suggestedMax:undefined
       },
-      color: '#00ffff'
-    },
-    grid: {
-      color: 'rgba(0,255,255,0.1)'
-    },
-    suggestedMin: 0,
-    suggestedMax: undefined // Auto-scale
-  },
-  y1: {
-    type: 'linear',
-    position: 'right',
-    title: {
-      text: 'Players',
-      display: true,
-      color: '#b388ff'
-    },
-    ticks: {
-      // Adapte l’échelle aux variations (jusqu’à 100+ joueurs)
-      stepSize: 10,
-      color: '#b388ff'
-    },
-    grid: {
-      drawOnChartArea: false // évite le double quadrillage
-    },
-    suggestedMin: 0,
-    suggestedMax: undefined // Auto-scale aussi !
-  },
-  x: {
-    ticks: { color: '#5dd9ff' },
-    grid: { color: 'rgba(0,255,255,0.1)' }
+      y1:{
+        type:'linear',
+        position:'right',
+        title:{text:'Players',display:true,color:'#b388ff'},
+        ticks:{stepSize:10,color:'#b388ff'},
+        grid:{drawOnChartArea:false},
+        suggestedMin:0,
+        suggestedMax:undefined
+      },
+      x:{
+        ticks:{color:'#5dd9ff'},
+        grid:{color:'rgba(0,255,255,0.1)'}
+      }
+    }
   }
-}
+});
 
+// === Résumé dynamique ===
 const summary=document.getElementById('summary');
 function updateSummary(type){
   const totalP=D[type].power.reduce((a,b)=>a+b,0);
   const totalB=D[type].players.reduce((a,b)=>a+b,0);
   summary.textContent=`💪🌐 Total Power : ${(totalP/1e6).toFixed(1)} M ⚡ – 👥 Active Players : ${totalB}`;
 }
+
 function switchData(type){
   chart.data.datasets[0].data=D[type].power;
   chart.data.datasets[1].data=D[type].players;
@@ -196,9 +184,9 @@ function switchData(type){
 }
 
 // --- Animation visuelle (pulsation & flux) ---
-let pulse=0,flowPos=0;
+let pulse=0;
 function animate(){
-  pulse+=0.04; flowPos+=1.5;
+  pulse+=0.04;
   const glow=0.5+Math.sin(pulse)*0.5;
   const color1=`rgba(0,239,255,${0.4+glow*0.3})`;
   const color2=`rgba(25,179,254,${0.4+glow*0.2})`;
@@ -211,31 +199,33 @@ animate();
 
 // === 🛰 Connexion aux Google Sheets ===
 async function fetchSheetData(sheetGid){
-  const sheetId = '1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs';
-
-  // on cible les plages précises
-  const rangePlayers = 'C127:Z127';
-  const rangePower   = 'C189:Z189';
+  const sheetId='1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs';
+  const rangePlayers='C127:Z127';
+  const rangePower='C189:Z189';
 
   async function fetchRange(range){
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${sheetGid}&range=${range}`;
-    const res = await fetch(url);
-    const txt = await res.text();
-    const json = JSON.parse(txt.substring(47).slice(0,-2));
-    const values = json.table.rows[0].c.map(c=> parseFloat((c?.v||'0').toString().replace(',', '.')));
-    return values;
+    const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${sheetGid}&range=${range}`;
+    const res=await fetch(url);
+    const txt=await res.text();
+    const json=JSON.parse(txt.substring(47).slice(0,-2));
+    const vals=json.table.rows[0].c.map(c=>{
+      if(!c||c.v===null)return 0;
+      const v=parseFloat(c.v.toString().replace(',', '.').replace(/[^\d.-]/g,''));
+      return isNaN(v)?0:v;
+    });
+    return vals;
   }
 
   try{
-    const [players, powers] = await Promise.all([
+    const [players,powers]=await Promise.all([
       fetchRange(rangePlayers),
       fetchRange(rangePower)
     ]);
     console.log(`✅ gid=${sheetGid}: ${players.length} players, ${powers.length} powers`);
-    return {powers, players};
+    return {players,power:powers};
   }catch(err){
-    console.error('Erreur Sheets:', err);
-    return {powers:[], players:[]};
+    console.error('Erreur Sheets:',err);
+    return {players:[],power:[]};
   }
 }
 
@@ -244,6 +234,9 @@ async function loadJTTData(){
     fetchSheetData(0),
     fetchSheetData(1434850621)
   ]);
+  // Conversion automatique si besoin
+  if(Math.max(...weekly.power)>1000) weekly.power=weekly.power.map(v=>v/1_000_000);
+  if(Math.max(...voidD.power)>1000) voidD.power=voidD.power.map(v=>v/1_000_000);
   D.weekly=weekly;
   D.void=voidD;
   switchData('weekly');
@@ -253,8 +246,16 @@ loadJTTData();
 // --- Onglets ---
 const weeklyBtn=document.getElementById('weeklyBtn');
 const voidBtn=document.getElementById('voidBtn');
-weeklyBtn.onclick=()=>{weeklyBtn.classList.add('active');voidBtn.classList.remove('active');switchData('weekly');};
-voidBtn.onclick=()=>{voidBtn.classList.add('active');weeklyBtn.classList.remove('active');switchData('void');};
+weeklyBtn.onclick=()=>{
+  weeklyBtn.classList.add('active');
+  voidBtn.classList.remove('active');
+  switchData('weekly');
+};
+voidBtn.onclick=()=>{
+  voidBtn.classList.add('active');
+  weeklyBtn.classList.remove('active');
+  switchData('void');
+};
 </script>
 </body>
 </html>
