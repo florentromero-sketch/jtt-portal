@@ -134,15 +134,53 @@ const chart = new Chart(ctx, {
       legend:{labels:{color:'#00eaff',font:{size:11}}},
       tooltip:{callbacks:{label:(c)=>`${c.dataset.label}: ${c.parsed.y}`}}
     },
-    scales:{
-      x:{ticks:{color:'#57dfff',font:{size:10}},grid:{color:'rgba(0,239,255,0.08)'}},
-      y:{beginAtZero:true,ticks:{color:'#57dfff',font:{size:10}},
-         grid:{color:'rgba(0,239,255,0.08)'},title:{display:true,text:'Power (M)',color:'#00eaff'}},
-      y1:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false},
-          ticks:{color:'#57dfff',font:{size:10}},title:{display:true,text:'Players',color:'#19b3fe'}}
-    }
+scales: {
+  y: {
+    type: 'linear',
+    position: 'left',
+    title: {
+      text: 'Power (M)',
+      display: true,
+      color: '#00ffff'
+    },
+    ticks: {
+      // Affiche les millions de manière lisible
+      callback: value => {
+        if (value >= 1_000_000) return (value / 1_000_000).toFixed(0) + ' M';
+        return value;
+      },
+      color: '#00ffff'
+    },
+    grid: {
+      color: 'rgba(0,255,255,0.1)'
+    },
+    suggestedMin: 0,
+    suggestedMax: undefined // Auto-scale
+  },
+  y1: {
+    type: 'linear',
+    position: 'right',
+    title: {
+      text: 'Players',
+      display: true,
+      color: '#b388ff'
+    },
+    ticks: {
+      // Adapte l’échelle aux variations (jusqu’à 100+ joueurs)
+      stepSize: 10,
+      color: '#b388ff'
+    },
+    grid: {
+      drawOnChartArea: false // évite le double quadrillage
+    },
+    suggestedMin: 0,
+    suggestedMax: undefined // Auto-scale aussi !
+  },
+  x: {
+    ticks: { color: '#5dd9ff' },
+    grid: { color: 'rgba(0,255,255,0.1)' }
   }
-});
+}
 
 const summary=document.getElementById('summary');
 function updateSummary(type){
