@@ -173,19 +173,31 @@ animate();
 
 // === 🛰 Connexion aux Google Sheets ===
 async function fetchSheetData(sheetGid){
-  const sheetId='1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs';
-  const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${sheetGid}`;
+  const sheetId = '1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs';
+
+  // on cible les plages précises
+  const rangePlayers = 'C127:Z127';
+  const rangePower   = 'C189:Z189';
+
+  async function fetchRange(range){
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${sheetGid}&range=${range}`;
+    const res = await fetch(url);
+    const txt = await res.text();
+    const json = JSON.parse(txt.substring(47).slice(0,-2));
+    const values = json.table.rows[0].c.map(c=> parseFloat((c?.v||'0').toString().replace(',', '.')));
+    return values;
+  }
+
   try{
-    const res=await fetch(url);
-    const txt=await res.text();
-    const json=JSON.parse(txt.substring(47).slice(0,-2));
-    const all=json.table.rows.map(r=>r.c.map(c=>c?.v||0));
-    const players=all[126]?.slice(2,26).map(Number);
-    const powers=all[188]?.slice(2,26).map(Number);
-    return {powers,players};
-  }catch(e){
-    console.error("Erreur de récupération Sheets:",e);
-    return {powers:[],players:[]};
+    const [players, powers] = await Promise.all([
+      fetchRange(rangePlayers),
+      fetchRange(rangePower)
+    ]);
+    console.log(`✅ gid=${sheetGid}: ${players.length} players, ${powers.length} powers`);
+    return {powers, players};
+  }catch(err){
+    console.error('Erreur Sheets:', err);
+    return {powers:[], players:[]};
   }
 }
 
