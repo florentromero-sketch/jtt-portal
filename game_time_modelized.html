@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚙️ Game Time Modelized – Brother in Arm + Sum War Power</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: radial-gradient(circle at 20% 20%, #081625 0%, #040d17 100%);
+    color: #b5e9f8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 {
+    font-size: 1rem;
+    text-shadow: 0 0 12px #00eaff;
+    color: #00eaff;
+    margin-bottom: 14px;
+    letter-spacing: 1.5px;
+    text-align: center;
+  }
+  .widget {
+    background: linear-gradient(180deg, rgba(8,22,37,0.95) 0%, rgba(4,13,23,0.95) 100%);
+    width: 100%;
+    max-width: 480px;
+    border-radius: 12px;
+    box-shadow: inset 0 0 20px rgba(0,239,255,0.15), 0 0 25px rgba(0,239,255,0.3);
+    position: relative;
+    overflow: hidden;
+    padding: 16px;
+  }
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .tab {
+    background: linear-gradient(90deg, #05283b 0%, #07334a 100%);
+    color: #00eaff;
+    font-weight: 700;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .tab.active {
+    background: linear-gradient(90deg, #00eaff 0%, #19b3fe 100%);
+    color: #02131f;
+    box-shadow: 0 0 18px rgba(0,239,255,0.4);
+  }
+  canvas {
+    width: 100% !important;
+    height: 260px !important;
+  }
+  .summary {
+    margin-top: 10px;
+    color: #77dfff;
+    text-align: center;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+
+<h1>⚙️ Game Time Modelized – Brother in Arm + Sum War Power</h1>
+
+<div class="widget">
+  <div class="tabs">
+    <button class="tab active" id="weeklyBtn">WEEKLY</button>
+    <button class="tab" id="voidBtn">VOID</button>
+  </div>
+  <canvas id="chart"></canvas>
+  <div class="summary" id="summary"></div>
+</div>
+
+<script>
+// === Déclaration du graphe de base ===
+const ctx = document.getElementById('chart').getContext('2d');
+const D = { weekly:{power:[],players:[]}, void:{power:[],players:[]} };
+
+const gradPower = ctx.createLinearGradient(0,0,0,300);
+gradPower.addColorStop(0,"rgba(0,239,255,0.4)");
+gradPower.addColorStop(1,"rgba(0,239,255,0)");
+const gradPlayers = ctx.createLinearGradient(0,0,0,300);
+gradPlayers.addColorStop(0,"rgba(25,179,254,0.4)");
+gradPlayers.addColorStop(1,"rgba(25,179,254,0)");
+
+const chart = new Chart(ctx, {
+  type:'line',
+  data:{
+    labels:Array.from({length:24},(_,i)=>`${i}h`),
+    datasets:[
+      {
+        label:"💪🌐 Sum War Power (M)",
+        data:[],
+        borderColor:'#00eaff',
+        backgroundColor:gradPower,
+        borderWidth:2,
+        fill:true,
+        tension:0.35,
+        pointRadius:3,
+        pointBackgroundColor:'#00eaff'
+      },
+      {
+        label:"👥 Brothers in Arm (Players)",
+        data:[],
+        borderColor:'#19b3fe',
+        backgroundColor:gradPlayers,
+        borderWidth:2,
+        fill:true,
+        tension:0.35,
+        pointRadius:3,
+        pointBackgroundColor:'#19b3fe',
+        yAxisID:'y1'
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    interaction:{mode:'index',intersect:false},
+    animation:{duration:800,easing:'easeInOutQuart'},
+    plugins:{
+      legend:{labels:{color:'#00eaff',font:{size:11}}},
+      tooltip:{callbacks:{label:(c)=>`${c.dataset.label}: ${c.parsed.y}`}}
+    },
+    scales:{
+      x:{ticks:{color:'#57dfff',font:{size:10}},grid:{color:'rgba(0,239,255,0.08)'}},
+      y:{beginAtZero:true,ticks:{color:'#57dfff',font:{size:10}},
+         grid:{color:'rgba(0,239,255,0.08)'},title:{display:true,text:'Power (M)',color:'#00eaff'}},
+      y1:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false},
+          ticks:{color:'#57dfff',font:{size:10}},title:{display:true,text:'Players',color:'#19b3fe'}}
+    }
+  }
+});
+
+const summary=document.getElementById('summary');
+function updateSummary(type){
+  const totalP=D[type].power.reduce((a,b)=>a+b,0);
+  const totalB=D[type].players.reduce((a,b)=>a+b,0);
+  summary.textContent=`💪🌐 Total Power : ${(totalP/1e6).toFixed(1)} M ⚡ – 👥 Active Players : ${totalB}`;
+}
+function switchData(type){
+  chart.data.datasets[0].data=D[type].power;
+  chart.data.datasets[1].data=D[type].players;
+  chart.update();
+  updateSummary(type);
+}
+
+// --- Animation visuelle (pulsation & flux) ---
+let pulse=0,flowPos=0;
+function animate(){
+  pulse+=0.04; flowPos+=1.5;
+  const glow=0.5+Math.sin(pulse)*0.5;
+  const color1=`rgba(0,239,255,${0.4+glow*0.3})`;
+  const color2=`rgba(25,179,254,${0.4+glow*0.2})`;
+  chart.data.datasets[0].borderColor=color1;
+  chart.data.datasets[1].borderColor=color2;
+  chart.update('none');
+  requestAnimationFrame(animate);
+}
+animate();
+
+// === 🛰 Connexion aux Google Sheets ===
+async function fetchSheetData(sheetGid){
+  const sheetId='1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs';
+  const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${sheetGid}`;
+  try{
+    const res=await fetch(url);
+    const txt=await res.text();
+    const json=JSON.parse(txt.substring(47).slice(0,-2));
+    const all=json.table.rows.map(r=>r.c.map(c=>c?.v||0));
+    const players=all[126]?.slice(2,26).map(Number);
+    const powers=all[188]?.slice(2,26).map(Number);
+    return {powers,players};
+  }catch(e){
+    console.error("Erreur de récupération Sheets:",e);
+    return {powers:[],players:[]};
+  }
+}
+
+async function loadJTTData(){
+  const [weekly,voidD]=await Promise.all([
+    fetchSheetData(0),
+    fetchSheetData(1434850621)
+  ]);
+  D.weekly=weekly;
+  D.void=voidD;
+  switchData('weekly');
+}
+loadJTTData();
+
+// --- Onglets ---
+const weeklyBtn=document.getElementById('weeklyBtn');
+const voidBtn=document.getElementById('voidBtn');
+weeklyBtn.onclick=()=>{weeklyBtn.classList.add('active');voidBtn.classList.remove('active');switchData('weekly');};
+voidBtn.onclick=()=>{voidBtn.classList.add('active');weeklyBtn.classList.remove('active');switchData('void');};
+</script>
+</body>
+</html>
