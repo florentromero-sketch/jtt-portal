@@ -2,13 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<!-- ✅ Zoom natif équivalent user 175% -->
+<meta name="viewport" content="width=device-width, initial-scale=1.75, maximum-scale=1.75, user-scalable=no">
+
 <title>🛰 JTT Alliance Management 3.5</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <meta name="theme-color" content="#00eaff">
 
+<!-- PWA manifest + icon -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
+/* ===== Variables ===== */
 :root{
   --blue-main:#00eaff;
   --blue-dark:#062d37;
@@ -16,106 +24,96 @@
   --text-light:#cbe4ef;
   --bg-dark:#010205;
 }
+
+/* ===== Base ===== */
 body{
-  margin:0;padding:0;font-family:"Orbitron",sans-serif;
+  margin:0;padding:0;
+  font-family:"Orbitron",sans-serif;
+  font-size:1.05rem;
+  line-height:1.45em;
   background:radial-gradient(circle at 20% 20%,#081625 0%,#040d17 100%);
   color:var(--text-light);
   display:flex;flex-direction:column;align-items:center;
-  padding:15px;
+  padding:18px;
 }
+
 h1{
   color:var(--blue-main);
   animation:glow 3s ease-in-out infinite;
   font-size:clamp(1rem,3vw,1.2rem);
-  margin:14px 0;text-align:center;text-transform:uppercase;
+  margin:18px 0;text-align:center;text-transform:uppercase;
 }
 @keyframes glow{
   0%,100%{text-shadow:0 0 6px var(--blue-main),0 0 10px var(--blue-main);}
   50%{text-shadow:0 0 18px var(--blue-main),0 0 26px var(--blue-main);}
 }
 
-/* ==== STRUCTURE ==== */
+/* ===== MAIN PANEL ===== */
 .dashboard{
-  width:92%;max-width:480px;
+  width:96%;max-width:500px;
   background:linear-gradient(180deg,rgba(8,22,37,0.95) 0%,rgba(4,13,23,0.95) 100%);
   border:1.5px solid var(--blue-main);
   border-radius:12px;
   box-shadow:inset 0 0 20px rgba(0,239,255,0.15),0 0 25px rgba(0,239,255,0.3);
-  padding:16px;margin-bottom:18px;
+  padding:20px;margin-bottom:24px;
 }
 .section{
   background:rgba(2,15,20,.7);
   border-left:3px solid var(--blue-main);
-  border-radius:8px;padding:14px;
+  border-radius:8px;padding:16px;
   box-shadow:inset 0 0 8px rgba(0,234,255,.25);
 }
 .section h2{
-  color:var(--gold-jtt);
-  margin:0 0 8px;text-align:center;
-  text-transform:uppercase;
-  text-shadow:0 0 8px var(--blue-main);
-  font-size:0.8rem;
+  color:var(--gold-jtt);margin:0 0 10px;text-align:center;
+  text-transform:uppercase;text-shadow:0 0 8px var(--blue-main);
+  font-size:0.85rem;
 }
 
-/* ==== PROGRESS BAR ==== */
+/* ===== Progress bar ===== */
 .jauge-container{
-  width:100%;background:rgba(5,25,30,.4);
+  background:rgba(5,25,30,.4);
   border:1px solid var(--blue-dark);
-  border-radius:6px;margin:8px 0;
-  height:20px;position:relative;overflow:hidden;
+  border-radius:6px;margin:10px 0;height:22px;position:relative;overflow:hidden;
 }
 .jauge-fill{
   background:linear-gradient(90deg,var(--blue-dark),var(--blue-main));
-  height:100%;width:0%;
-  transition:width 1.2s ease-in-out;
+  height:100%;width:0%;transition:width 1.2s ease-in-out;
 }
 .jauge-text{
   position:absolute;inset:0;display:flex;
   align-items:center;justify-content:center;
-  font-size:0.8em;color:#fff;text-shadow:0 0 6px var(--blue-main);
+  font-size:0.85em;color:#fff;text-shadow:0 0 6px var(--blue-main);
 }
 
-/* ==== LINKS ==== */
-.submenu{
-  display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px;
-}
+/* ===== Buttons & Links ===== */
+.submenu{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:12px;}
 .link{
   flex:1 1 45%;
   background:linear-gradient(90deg,var(--blue-dark),var(--blue-main));
-  border-radius:6px;color:#fff;
-  text-align:center;text-decoration:none;
-  padding:8px 10px;
-  font-weight:700;
-  font-size:clamp(0.7rem,2.8vw,0.85rem);
+  border-radius:8px;color:#fff;text-align:center;text-decoration:none;
+  padding:10px 12px;font-weight:700;
+  font-size:clamp(0.8rem,3.4vw,1rem);
   white-space:nowrap;
+  box-shadow:0 0 10px rgba(0,234,255,.4);
   transition:.25s;
-  box-shadow:0 0 8px rgba(0,234,255,.4);
 }
-.link:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 15px var(--blue-main);
-}
+.link:hover{transform:scale(1.05);box-shadow:0 0 18px var(--blue-main);}
 
-/* ==== REFRESH BUTTON ==== */
 .btn-sync{
-  display:block;margin:10px auto 0;
+  display:block;margin:14px auto 0;
   background:none;border:1px solid var(--blue-main);
   color:var(--gold-jtt);
-  border-radius:5px;padding:5px 12px;
-  font-size:0.8rem;cursor:pointer;
+  border-radius:5px;padding:7px 14px;
+  font-size:0.9rem;cursor:pointer;
 }
-.btn-sync:hover{
-  background:var(--blue-main);color:#fff;
-  box-shadow:0 0 10px var(--blue-main);
-}
+.btn-sync:hover{background:var(--blue-main);color:#fff;box-shadow:0 0 10px var(--blue-main);}
 
-/* ==== CHART ==== */
-.tabs{display:flex;justify-content:center;gap:10px;margin:10px 0;}
+/* ===== Chart ===== */
+.tabs{display:flex;justify-content:center;gap:12px;margin:12px 0;}
 .tab{
   background:linear-gradient(90deg,#05283b 0%,#07334a 100%);
-  color:#00eaff;border:none;cursor:pointer;
-  font-weight:700;
-  padding:6px 14px;border-radius:6px;text-transform:uppercase;
+  color:#00eaff;border:none;cursor:pointer;font-weight:700;
+  padding:8px 16px;border-radius:6px;text-transform:uppercase;
 }
 .tab.active{
   background:linear-gradient(90deg,#00eaff 0%,#19b3fe 100%);
@@ -127,18 +125,13 @@ canvas{
   aspect-ratio:16/9;
   display:block;
 }
-.summary{
-  text-align:center;
-  color:#77dfff;
-  margin-top:10px;
-  font-size:0.85rem;
-}
-footer{
-  text-align:center;
-  font-size:0.7rem;
-  opacity:0.6;
-  color:#00b7ff;
-  margin:1.2rem 0;
+.summary{text-align:center;color:#77dfff;margin-top:12px;font-size:0.9rem;}
+
+/* ===== Small Screen ===== */
+@media (max-width:400px){
+  body{font-size:0.95rem;}
+  .dashboard{padding:14px;}
+  .link{font-size:0.85rem;}
 }
 </style>
 </head>
@@ -146,7 +139,6 @@ footer{
 <body>
 <h1>🛰 JTT Alliance Management V3.5 🛰</h1>
 
-<!-- === UPPER PANEL === -->
 <div class="dashboard">
   <div class="section">
     <h2>SHEET : ALLIANCE STATS</h2>
@@ -171,16 +163,13 @@ footer{
   </div>
 </div>
 
-<!-- === LOWER PANEL === -->
 <div class="dashboard">
   <div class="section">
     <h2>📈 GAME TIME MODELIZED – BROTHER IN ARM + SUM WAR POWER</h2>
-
     <div class="tabs">
       <button class="tab active" id="weeklyBtn">WEEKLY</button>
       <button class="tab" id="voidBtn">VOID</button>
     </div>
-
     <canvas id="chart"></canvas>
     <div class="summary" id="summary">Loading data...</div>
   </div>
@@ -189,123 +178,83 @@ footer{
 <footer>© JTT Alliance Management V3.5</footer>
 
 <script>
-/* ===== 1. Alliance gauge ===== */
+/* --- Alliance bar --- */
 async function loadStats(){
-  const SHEET_ID="1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs";
-  const GID="1508042555";
-  const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`;
   try{
-    const res=await fetch(CSV_URL);
+    const res=await fetch(`https://docs.google.com/spreadsheets/d/1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs/gviz/tq?tqx=out:csv&gid=1508042555`);
     const text=await res.text();
-    const rows=text.trim().split("\n").map(r=>r.split(",").map(c=>c.replace(/(^"|"$)/g,"").trim()));
-    const numbers=(rows[1]||[]).filter(x=>/^[0-9]+$/.test(x));
-    const current=parseInt(numbers[0]||"0"),total=parseInt(numbers[1]||"1");
-    const pct=Math.min(Math.round((current/total)*100),100);
+    const rows=text.trim().split("\n").map(r=>r.split(",").map(c=>c.replace(/(^"|"$)/g,"")));
+    const nums=(rows[1]||[]).filter(x=>/^[0-9]+$/.test(x));
+    const cur=parseInt(nums[0]||"0"), tot=parseInt(nums[1]||"1");
+    const pct=Math.min(Math.round((cur/tot)*100),100);
     fillBar.style.width=pct+"%";
-    fillText.textContent=pct+"% completed";
-    count.textContent=current;total.textContent=total;
-  }catch(e){
-    fillText.textContent="❌ Error loading";
-  }
+    fillText.textContent=pct+"% completed";
+    count.textContent=cur; total.textContent=tot;
+  }catch{fillText.textContent="❌ Error";}
 }
 loadStats();
 
-/* ===== 2. Chart initialization ===== */
+/* --- Chart --- */
 const ctx=document.getElementById('chart').getContext('2d');
 const D={weekly:{power:[],players:[]},void:{power:[],players:[]}};
-const gradPower=ctx.createLinearGradient(0,0,0,300);
-gradPower.addColorStop(0,"rgba(0,255,255,0.25)");
-gradPower.addColorStop(1,"rgba(0,155,255,0)");
-const gradPlayers=ctx.createLinearGradient(0,0,0,300);
-gradPlayers.addColorStop(0,"rgba(0,255,255,0.25)");
-gradPlayers.addColorStop(1,"rgba(0,255,255,0.05)");
+const grad=ctx.createLinearGradient(0,0,0,200);
+grad.addColorStop(0,"rgba(0,255,255,0.25)");
+grad.addColorStop(1,"rgba(0,255,255,0)");
 const chart=new Chart(ctx,{
   type:'line',
   data:{
     labels:Array.from({length:25},(_,i)=>i<24?`${i}h`:"24h"),
     datasets:[
-      {label:"💪🌐 Sum War Power (M)",data:[],borderColor:'#00ffee',
-        backgroundColor:gradPower,borderWidth:3,fill:true,tension:0.35,
-        pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#00ffe0',yAxisID:'y'},
-      {label:"👥 Brothers in Arm (Players)",data:[],borderColor:'#00cfff',
-        backgroundColor:gradPlayers,borderWidth:2,fill:true,tension:0.35,
-        pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#00dfff',yAxisID:'y1'}
+      {label:"💪🌐 Sum War Power (M)",data:[],
+       borderColor:'#00ffee',backgroundColor:grad,fill:true,tension:0.35,
+       borderWidth:3,pointRadius:3,pointBackgroundColor:'#00ffe0',yAxisID:'y'},
+      {label:"👥 Brothers in Arm (Players)",data:[],
+       borderColor:'#00cfff',backgroundColor:"rgba(0,255,255,0.08)",fill:true,
+       tension:0.35,borderWidth:2,pointRadius:3,yAxisID:'y1'}
     ]
   },
   options:{
     responsive:true,maintainAspectRatio:true,
     interaction:{mode:'index',intersect:false},
-    animation:{duration:900,easing:'easeInOutQuart'},
-    plugins:{legend:{labels:{color:'#00eaff',font:{size:10}}},
-    tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)}`}}},
+    plugins:{legend:{labels:{color:'#00eaff',font:{size:10}}}},
     scales:{
-      y:{beginAtZero:true,ticks:{color:'#00ffff'},grid:{color:'rgba(0,255,255,0.08)'}},
+      y:{beginAtZero:true,ticks:{color:'#00ffff'},grid:{color:'rgba(0,255,255,0.05)'}},
       y1:{position:'right',beginAtZero:true,ticks:{color:'#00ffff'},grid:{drawOnChartArea:false}},
       x:{ticks:{color:'#66eaff'},grid:{color:'rgba(0,255,255,0.05)'}}
     }
   }
 });
+function glow(){const g=7+5*Math.sin(Date.now()/400);ctx.canvas.style.boxShadow=`0 0 ${g}px #00eaff`;requestAnimationFrame(glow);}glow();
 
-const summary=document.getElementById('summary');
-function currentUTC(){return new Date().getUTCHours()%24;}
-function updateSummary(type){
-  const h=currentUTC();
-  const p=D[type].power[h]||0;
-  const b=D[type].players[h]||0;
-  summary.textContent=`🕘 ${h}h UTC • 💪 Power: ${p.toFixed(1)} M ⚡ – 👥 Players: ${b}`;
+/* --- Fetch Google data --- */
+async function rangeFetch(gid,range){
+  const url=`https://docs.google.com/spreadsheets/d/1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs/gviz/tq?tqx=out:json&gid=${gid}&range=${range}`;
+  const res=await fetch(url);const txt=await res.text();
+  const json=JSON.parse(txt.substring(47).slice(0,-2));
+  return json.table.rows[0].c.map(c=>parseFloat(String(c?.v??0).replace(',','.'))||0);
 }
-
-/* Halo animation only (no refresh cost) */
-let haloPulse=0;
-function glowFrame(){
-  haloPulse+=0.03;
-  const intensity=8+5*Math.sin(haloPulse);
-  ctx.canvas.style.boxShadow=`0 0 ${intensity}px #00eaff`;
-  requestAnimationFrame(glowFrame);
+async function loadData(){
+  const [w,v]=await Promise.all([
+    Promise.all([rangeFetch(0,'C127:AA127'),rangeFetch(0,'C189:AA189')]),
+    Promise.all([rangeFetch(1434850621,'C127:AA127'),rangeFetch(1434850621,'C189:AA189')])
+  ]);
+  D.weekly={players:w[0],power:w[1].map(p=>p/1_000_000)};
+  D.void={players:v[0],power:v[1].map(p=>p/1_000_000)};
+  setData('weekly');
 }
-glowFrame();
-
-/* ===== 3. Data loading ===== */
-async function fetchSheetData(gid){
-  const sheet='1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs';
-  const rangePlayers='C127:AA127',rangePower='C189:AA189';
-  async function rangeFetch(r){
-    const url=`https://docs.google.com/spreadsheets/d/${sheet}/gviz/tq?tqx=out:json&gid=${gid}&range=${r}`;
-    const res=await fetch(url);
-    const txt=await res.text();
-    const json=JSON.parse(txt.substring(47).slice(0,-2));
-    return json.table.rows[0].c.map(c=>{
-      if(!c||c.v===null)return 0;
-      const v=parseFloat(String(c.v).replace(',','.').replace(/[^\d.-]/g,''));
-      return isNaN(v)?0:v;
-    });
-  }
-  try{
-    const [players,power]=await Promise.all([rangeFetch(rangePlayers),rangeFetch(rangePower)]);
-    if(power.length===24){power.push(power[0]);players.push(players[0]);}
-    return {players,power};
-  }catch{return{players:[],power:[]};}
-}
-
-async function initData(){
-  const [weekly,voidD]=await Promise.all([fetchSheetData(0),fetchSheetData(1434850621)]);
-  if(Math.max(...weekly.power)>1000)weekly.power=weekly.power.map(v=>v/1_000_000);
-  if(Math.max(...voidD.power)>1000)voidD.power=voidD.power.map(v=>v/1_000_000);
-  D.weekly=weekly;D.void=voidD;
-  switchData('weekly');
-}
-initData();
-
-function switchData(type){
+function setData(type){
   chart.data.datasets[0].data=D[type].power;
   chart.data.datasets[1].data=D[type].players;
   chart.update();
-  updateSummary(type);
 }
+weeklyBtn.onclick=()=>{weeklyBtn.classList.add('active');voidBtn.classList.remove('active');setData('weekly');};
+voidBtn.onclick=()=>{voidBtn.classList.add('active');weeklyBtn.classList.remove('active');setData('void');};
+loadData();
 
-/* ===== 4. Tabs ===== */
-weeklyBtn.onclick=()=>{weeklyBtn.classList.add('active');voidBtn.classList.remove('active');switchData('weekly');};
-voidBtn.onclick=()=>{voidBtn.classList.add('active');weeklyBtn.classList.remove('active');switchData('void');};
+/* --- Register Service Worker --- */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js');
+}
 </script>
 </body>
 </html>
