@@ -249,142 +249,254 @@ voidBtn.onclick=()=>{voidBtn.classList.add('active');weeklyBtn.classList.remove(
 </script>
 </body>
 </html>
-.jauge-text{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:0.8em;
-  color:#fff;
-  text-shadow:0 0 6px var(--blue-main);
-}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🛰 JTT Alliance Management 3.5</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="theme-color" content="#00eaff">
 
-/* --- Liens --- */
-.submenu{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:8px;
-  margin-top:10px;
+<style>
+:root{
+  --blue-main:#00eaff;--blue-dark:#062d37;--gold-jtt:#e1b46a;
+  --text-light:#cbe4ef;--bg-dark:#010205;
 }
-.link{
-  flex:1 1 45%;
+body{
+  margin:0;padding:0;font-family:"Orbitron",sans-serif;
+  background:radial-gradient(circle at 20% 20%,#081625 0%,#040d17 100%);
+  color:var(--text-light);display:flex;flex-direction:column;
+  align-items:center;padding:15px;
+}
+h1{
+  color:var(--blue-main);
+  animation:glow 3s ease-in-out infinite;
+  font-size:clamp(1rem,3vw,1.2rem);
+  margin:14px 0;text-align:center;text-transform:uppercase;
+}
+@keyframes glow{
+  0%,100%{text-shadow:0 0 6px var(--blue-main),0 0 10px var(--blue-main);}
+  50%{text-shadow:0 0 16px var(--blue-main),0 0 26px var(--blue-main);}
+}
+.dashboard{
+  width:92%;max-width:480px;
+  background:linear-gradient(180deg,rgba(8,22,37,0.95) 0%,rgba(4,13,23,0.95) 100%);
+  border:1.5px solid var(--blue-main);
+  border-radius:12px;
+  box-shadow:inset 0 0 20px rgba(0,239,255,0.15),0 0 25px rgba(0,239,255,0.3);
+  padding:16px;margin-bottom:18px;
+}
+.section{
+  background:rgba(2,15,20,.7);
+  border-left:3px solid var(--blue-main);
+  border-radius:8px;
+  padding:14px;
+  box-shadow:inset 0 0 8px rgba(0,234,255,.25);
+}
+.section h2{
+  color:var(--gold-jtt);
+  margin:0 0 8px;text-align:center;
+  text-transform:uppercase;text-shadow:0 0 8px var(--blue-main);
+  font-size:0.8rem;
+}
+.jauge-container{
+  width:100%;background:rgba(5,25,30,.4);
+  border:1px solid var(--blue-dark);
+  border-radius:6px;margin:8px 0;
+  height:20px;position:relative;overflow:hidden;
+}
+.jauge-fill{
   background:linear-gradient(90deg,var(--blue-dark),var(--blue-main));
-  border-radius:6px;
-  color:#fff;
-  text-align:center;
-  text-decoration:none;
-  padding:8px 10px;
-  font-weight:700;
-  font-size:0.85rem;
-  transition:.25s;
+  height:100%;width:0%;transition:width 1.2s ease-in-out;
+}
+.jauge-text{
+  position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;
+  font-size:0.8em;color:#fff;text-shadow:0 0 6px var(--blue-main);
+}
+.submenu{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.link{
+  flex:1 1 45%;background:linear-gradient(90deg,var(--blue-dark),var(--blue-main));
+  border-radius:6px;color:#fff;text-align:center;text-decoration:none;
+  padding:8px 10px;font-weight:700;font-size:0.85rem;transition:.25s;
   box-shadow:0 0 8px rgba(0,234,255,.4);
 }
-.link:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 15px var(--blue-main);
-}
-
+.link:hover{transform:scale(1.05);box-shadow:0 0 15px var(--blue-main);}
 .btn-sync{
-  display:block;
-  margin:10px auto 0;
-  background:none;
-  border:1px solid var(--blue-main);
-  color:var(--gold-jtt);
-  border-radius:5px;
-  padding:5px 10px;
-  font-size:0.8rem;
-  cursor:pointer;
+  display:block;margin:10px auto 0;background:none;border:1px solid var(--blue-main);
+  color:var(--gold-jtt);border-radius:5px;padding:5px 10px;font-size:0.8rem;cursor:pointer;
 }
-.btn-sync:hover{
-  background:var(--blue-main);
-  color:#fff;
-  box-shadow:0 0 10px var(--blue-main);
+.btn-sync:hover{background:var(--blue-main);color:#fff;box-shadow:0 0 10px var(--blue-main);}
+canvas{width:100%!important;height:260px!important;}
+.summary{text-align:center;color:#77dfff;margin-top:10px;font-size:0.85rem;}
+.tabs{display:flex;justify-content:center;gap:10px;margin:10px 0;}
+.tab{
+  background:linear-gradient(90deg,#05283b 0%,#07334a 100%);
+  color:#00eaff;border:none;cursor:pointer;
+  font-weight:700;padding:6px 14px;border-radius:6px;text-transform:uppercase;
 }
-
-/* --- Responsive --- */
-@media(max-width:600px){
-  .link{flex:1 1 100%;max-width:100%;}
+.tab.active{
+  background:linear-gradient(90deg,#00eaff 0%,#19b3fe 100%);
+  color:#02131f;box-shadow:0 0 18px rgba(0,239,255,0.4);
 }
 </style>
 </head>
 
 <body>
+<h1>🛰 JTT Alliance Management V3.5 🛰</h1>
 
-<h1>🛰 JTT Alliance Management V2 🛰</h1>
-
+<!-- SECTION SUPÉRIEURE : JAUGE + LIENS -->
 <div class="dashboard">
   <div class="section">
     <h2>Feuille : Stats Alliance</h2>
-    <p> Member census tracking. Data auto-updated.</p>
+    <p style="text-align:center">Member census tracking. Data auto‑updated.</p>
 
     <div class="jauge-container">
       <div class="jauge-fill" id="fillBar"></div>
       <div class="jauge-text" id="fillText">Chargement…</div>
     </div>
 
-    <p><strong>Membres enregistrés :</strong> 
-       <span id="count">--</span> / <span id="total">--</span>
+    <p style="text-align:center">
+      <strong>Membres enregistrés :</strong> <span id="count">--</span> / <span id="total">--</span>
     </p>
 
     <div class="submenu">
-      <a class="link" href="https://forms.gle/VSXaijct8ebQFnYx5" target="_blank">📋 New Registratione</a>
-      <a class="link" href="https://docs.google.com/spreadsheets/d/1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs/edit?gid=483757800#gid=483757800" target="_blank">📊 JTT Data system</a>
-      <a class="link" href="JTT_backup.html" target="_self">🎯 My Personal Link</a>
+      <a class="link" href="https://forms.gle/VSXaijct8ebQFnYx5" target="_blank">📋 New Registration</a>
+      <a class="link" href="https://docs.google.com/spreadsheets/d/1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs/edit?gid=483757800#gid=483757800" target="_blank">📊 JTT Data System</a>
+      <a class="link" href="JTT_backup.html" target="_self">🎯 My Personal Link</a>
     </div>
 
     <button class="btn-sync" onclick="loadStats()">🔄 Refresh</button>
   </div>
 </div>
 
+<!-- SECTION INFÉRIEURE : GRAPHIQUE DYNAMIQUE -->
+<div class="dashboard">
+  <div class="section">
+    <h2>📈 Game Time Modelized – Brother in Arm + Sum War Power</h2>
+    <div class="tabs">
+      <button class="tab active" id="weeklyBtn">WEEKLY</button>
+      <button class="tab" id="voidBtn">VOID</button>
+    </div>
+    <canvas id="chart"></canvas>
+    <div class="summary" id="summary">Chargement des données...</div>
+  </div>
+</div>
+
 <script>
-const SHEET_ID = "1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs";
-const GID = "1508042555";
-const CSV_URL =
-  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`;
-
-async function loadStats() {
-  try {
-    const res = await fetch(CSV_URL);
-    const text = await res.text();
-
-    const rows = text.trim().split("\n").map(r =>
-      r.split(",").map(c => c.replace(/(^"|"$)/g, "").trim())
-    );
-
-    const second = rows[1] || [];
-    const numbers = second.filter(x => /^\d+$/.test(x));
-
-    const current = parseInt(numbers[0] || "0");
-    const total = parseInt(numbers[1] || "1");
-
-    const pct = Math.min(Math.round((current / total) * 100), 100);
-
-    document.getElementById("count").textContent = current;
-    document.getElementById("total").textContent = total;
-    document.getElementById("fillBar").style.width = pct + "%";
-    document.getElementById("fillText").textContent = pct + "% complété";
-
-    console.log("✅ Stats : ", current, "/", total, `(${pct}%)`);
-  } catch (err) {
-    console.error("⚠️ Erreur lors du chargement :", err);
-    document.getElementById("fillText").textContent = "❌ Erreur chargement";
+/* ========== 1️⃣ JAUGE ALLIANCE ========== */
+const SHEET_ID="1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs";
+const GID="1508042555";
+const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`;
+async function loadStats(){
+  try{
+    const res=await fetch(CSV_URL);
+    const text=await res.text();
+    const rows=text.trim().split("\n").map(r=>r.split(",").map(c=>c.replace(/(^"|"$)/g,"").trim()));
+    const second=rows[1]||[];
+    const numbers=second.filter(x=>/^\d+$/.test(x));
+    const current=parseInt(numbers[0]||"0");
+    const total=parseInt(numbers[1]||"1");
+    const pct=Math.min(Math.round((current/total)*100),100);
+    document.getElementById("count").textContent=current;
+    document.getElementById("total").textContent=total;
+    document.getElementById("fillBar").style.width=pct+"%";
+    document.getElementById("fillText").textContent=pct+"% complété";
+  }catch(err){
+    console.error("Erreur chargement:",err);
+    document.getElementById("fillText").textContent="❌ Erreur";
   }
 }
-
 loadStats();
-</script>
 
-<!-- 🟢 Service Worker -->
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./service-worker.js")
-    .then(() => console.log("✅ Service Worker enregistré"))
-    .catch(err => console.error("❌ Erreur SW", err));
+/* ========== 2️⃣ GRAPHIQUE ========== */
+const ctx=document.getElementById('chart').getContext('2d');
+const D={weekly:{power:[],players:[]},void:{power:[],players:[]}};
+const gradPower=ctx.createLinearGradient(0,0,0,300);
+gradPower.addColorStop(0,"rgba(0,255,255,0.25)");
+gradPower.addColorStop(1,"rgba(0,155,255,0)");
+const gradPlayers=ctx.createLinearGradient(0,0,0,300);
+gradPlayers.addColorStop(0,"rgba(179,136,255,0.25)");
+gradPlayers.addColorStop(1,"rgba(179,136,255,0.05)");
+const chart=new Chart(ctx,{
+  type:'line',
+  data:{
+    labels:Array.from({length:25},(_,i)=> i<24? `${i}h` : "24h"),
+    datasets:[
+      {label:"💪🌐 Sum War Power (M)",data:[],borderColor:'#00ffee',
+       backgroundColor:gradPower,borderWidth:3,fill:true,tension:0.35,
+       pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#00ffe0',yAxisID:'y'},
+      {label:"👥 Brothers in Arm (Players)",data:[],borderColor:'#b388ff',
+       backgroundColor:gradPlayers,borderWidth:2,fill:true,tension:0.35,
+       pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#b388ff',yAxisID:'y1'}
+    ]
+  },
+  options:{
+    responsive:true,interaction:{mode:'index',intersect:false},
+    animation:{duration:800,easing:'easeInOutQuart'},
+    plugins:{legend:{labels:{color:'#00eaff',font:{size:11}}},
+    tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)}`}}},
+    scales:{
+      y:{beginAtZero:true,ticks:{color:'#00ffff'},grid:{color:'rgba(0,255,255,0.08)'}},
+      y1:{position:'right',beginAtZero:true,ticks:{color:'#b388ff'},grid:{drawOnChartArea:false}},
+      x:{ticks:{color:'#5dd9ff'},grid:{color:'rgba(0,255,255,0.08)'}}
+    }
+  }
+});
+const summary=document.getElementById('summary');
+function currentHourIndexUTC0(){return new Date().getUTCHours()%24;}
+function updateSummary(type){
+  const h=currentHourIndexUTC0();
+  const p=D[type].power[h]||0;
+  const b=D[type].players[h]||0;
+  summary.textContent=`🕘 ${h}h UTC • 💪 Power: ${p.toFixed(1)} M ⚡ – 👥 Players: ${b}`;
+  chart.data.datasets.forEach(ds=>{ds.pointRadius=ds.data.map((_,i)=>i===h?6:3);});
 }
+function switchData(type){
+  chart.data.datasets[0].data=D[type].power;
+  chart.data.datasets[1].data=D[type].players;
+  chart.update();updateSummary(type);
+}
+let pulse=0;function animate(){
+  pulse+=0.04;
+  const glow=0.5+Math.sin(pulse)*0.5;
+  chart.data.datasets[0].borderColor=`rgba(0,255,255,${0.55+glow*0.3})`;
+  chart.data.datasets[1].borderColor=`rgba(179,136,255,${0.55+glow*0.3})`;
+  chart.update('none');requestAnimationFrame(animate);
+}
+animate();
+async function fetchSheetData(gid){
+  const sheetId='1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs';
+  const rangePlayers='C127:AA127';
+  const rangePower='C189:AA189';
+  async function fetchRange(r){
+    const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}&range=${r}`;
+    const res=await fetch(url);
+    const txt=await res.text();
+    const json=JSON.parse(txt.substring(47).slice(0,-2));
+    return json.table.rows[0].c.map(c=>{
+      if(!c||c.v===null)return 0;
+      const v=parseFloat(c.v.toString().replace(',','.').replace(/[^\d.-]/g,''));
+      return isNaN(v)?0:v;
+    });
+  }
+  try{
+    const [players,power]=await Promise.all([fetchRange(rangePlayers),fetchRange(rangePower)]);
+    if(power.length===24){power.push(power[0]);players.push(players[0]);}
+    return {players,power};
+  }catch(e){return{players:[],power:[]};}
+}
+async function loadJTTData(){
+  const [weekly,voidD]=await Promise.all([fetchSheetData(0),fetchSheetData(1434850621)]);
+  if(Math.max(...weekly.power)>1000)weekly.power=weekly.power.map(v=>v/1_000_000);
+  if(Math.max(...voidD.power)>1000)voidD.power=voidD.power.map(v=>v/1_000_000);
+  D.weekly=weekly;D.void=voidD;setTimeout(()=>switchData('weekly'),200);
+}
+loadJTTData();
+weeklyBtn.onclick=()=>{weeklyBtn.classList.add('active');voidBtn.classList.remove('active');switchData('weekly');};
+voidBtn.onclick=()=>{voidBtn.classList.add('active');weeklyBtn.classList.remove('active');switchData('void');};
 </script>
-
 </body>
 </html>
-
