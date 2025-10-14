@@ -1,23 +1,27 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🛰 JTT Alliance Management 3.5</title>
+<title>🛰 JTT Alliance Management 3.5</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <meta name="theme-color" content="#00eaff">
 
 <style>
 :root{
-  --blue-main:#00eaff;--blue-dark:#062d37;--gold-jtt:#e1b46a;
-  --text-light:#cbe4ef;--bg-dark:#010205;
+  --blue-main:#00eaff;
+  --blue-dark:#062d37;
+  --gold-jtt:#e1b46a;
+  --text-light:#cbe4ef;
+  --bg-dark:#010205;
 }
 body{
   margin:0;padding:0;font-family:"Orbitron",sans-serif;
   background:radial-gradient(circle at 20% 20%,#081625 0%,#040d17 100%);
-  color:var(--text-light);display:flex;flex-direction:column;
-  align-items:center;padding:15px;
+  color:var(--text-light);
+  display:flex;flex-direction:column;align-items:center;
+  padding:15px;
 }
 h1{
   color:var(--blue-main);
@@ -27,8 +31,10 @@ h1{
 }
 @keyframes glow{
   0%,100%{text-shadow:0 0 6px var(--blue-main),0 0 10px var(--blue-main);}
-  50%{text-shadow:0 0 16px var(--blue-main),0 0 26px var(--blue-main);}
+  50%{text-shadow:0 0 18px var(--blue-main),0 0 26px var(--blue-main);}
 }
+
+/* ==== STRUCTURE ==== */
 .dashboard{
   width:92%;max-width:480px;
   background:linear-gradient(180deg,rgba(8,22,37,0.95) 0%,rgba(4,13,23,0.95) 100%);
@@ -40,16 +46,18 @@ h1{
 .section{
   background:rgba(2,15,20,.7);
   border-left:3px solid var(--blue-main);
-  border-radius:8px;
-  padding:14px;
+  border-radius:8px;padding:14px;
   box-shadow:inset 0 0 8px rgba(0,234,255,.25);
 }
 .section h2{
   color:var(--gold-jtt);
   margin:0 0 8px;text-align:center;
-  text-transform:uppercase;text-shadow:0 0 8px var(--blue-main);
+  text-transform:uppercase;
+  text-shadow:0 0 8px var(--blue-main);
   font-size:0.8rem;
 }
+
+/* ==== PROGRESS BAR ==== */
 .jauge-container{
   width:100%;background:rgba(5,25,30,.4);
   border:1px solid var(--blue-dark);
@@ -58,37 +66,79 @@ h1{
 }
 .jauge-fill{
   background:linear-gradient(90deg,var(--blue-dark),var(--blue-main));
-  height:100%;width:0%;transition:width 1.2s ease-in-out;
+  height:100%;width:0%;
+  transition:width 1.2s ease-in-out;
 }
 .jauge-text{
   position:absolute;inset:0;display:flex;
   align-items:center;justify-content:center;
   font-size:0.8em;color:#fff;text-shadow:0 0 6px var(--blue-main);
 }
-.submenu{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+
+/* ==== LINKS ==== */
+.submenu{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px;
+}
 .link{
-  flex:1 1 45%;background:linear-gradient(90deg,var(--blue-dark),var(--blue-main));
-  border-radius:6px;color:#fff;text-align:center;text-decoration:none;
-  padding:8px 10px;font-weight:700;font-size:0.85rem;transition:.25s;
+  flex:1 1 45%;
+  background:linear-gradient(90deg,var(--blue-dark),var(--blue-main));
+  border-radius:6px;color:#fff;
+  text-align:center;text-decoration:none;
+  padding:8px 10px;
+  font-weight:700;
+  font-size:clamp(0.7rem,2.8vw,0.85rem);
+  white-space:nowrap;
+  transition:.25s;
   box-shadow:0 0 8px rgba(0,234,255,.4);
 }
-.link:hover{transform:scale(1.05);box-shadow:0 0 15px var(--blue-main);}
-.btn-sync{
-  display:block;margin:10px auto 0;background:none;border:1px solid var(--blue-main);
-  color:var(--gold-jtt);border-radius:5px;padding:5px 10px;font-size:0.8rem;cursor:pointer;
+.link:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 15px var(--blue-main);
 }
-.btn-sync:hover{background:var(--blue-main);color:#fff;box-shadow:0 0 10px var(--blue-main);}
-canvas{width:100%!important;height:260px!important;}
-.summary{text-align:center;color:#77dfff;margin-top:10px;font-size:0.85rem;}
+
+/* ==== REFRESH BUTTON ==== */
+.btn-sync{
+  display:block;margin:10px auto 0;
+  background:none;border:1px solid var(--blue-main);
+  color:var(--gold-jtt);
+  border-radius:5px;padding:5px 12px;
+  font-size:0.8rem;cursor:pointer;
+}
+.btn-sync:hover{
+  background:var(--blue-main);color:#fff;
+  box-shadow:0 0 10px var(--blue-main);
+}
+
+/* ==== CHART ==== */
 .tabs{display:flex;justify-content:center;gap:10px;margin:10px 0;}
 .tab{
   background:linear-gradient(90deg,#05283b 0%,#07334a 100%);
   color:#00eaff;border:none;cursor:pointer;
-  font-weight:700;padding:6px 14px;border-radius:6px;text-transform:uppercase;
+  font-weight:700;
+  padding:6px 14px;border-radius:6px;text-transform:uppercase;
 }
 .tab.active{
   background:linear-gradient(90deg,#00eaff 0%,#19b3fe 100%);
   color:#02131f;box-shadow:0 0 18px rgba(0,239,255,0.4);
+}
+canvas{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:16/9;
+  display:block;
+}
+.summary{
+  text-align:center;
+  color:#77dfff;
+  margin-top:10px;
+  font-size:0.85rem;
+}
+footer{
+  text-align:center;
+  font-size:0.7rem;
+  opacity:0.6;
+  color:#00b7ff;
+  margin:1.2rem 0;
 }
 </style>
 </head>
@@ -96,19 +146,19 @@ canvas{width:100%!important;height:260px!important;}
 <body>
 <h1>🛰 JTT Alliance Management V3.5 🛰</h1>
 
-<!-- SECTION SUPÉRIEURE : JAUGE + LIENS -->
+<!-- === UPPER PANEL === -->
 <div class="dashboard">
   <div class="section">
-    <h2>Feuille : Stats Alliance</h2>
+    <h2>SHEET : ALLIANCE STATS</h2>
     <p style="text-align:center">Member census tracking. Data auto‑updated.</p>
 
     <div class="jauge-container">
       <div class="jauge-fill" id="fillBar"></div>
-      <div class="jauge-text" id="fillText">Chargement…</div>
+      <div class="jauge-text" id="fillText">Loading…</div>
     </div>
 
     <p style="text-align:center">
-      <strong>Membres enregistrés :</strong> <span id="count">--</span> / <span id="total">--</span>
+      <strong>Registered Members :</strong> <span id="count">--</span> / <span id="total">--</span>
     </p>
 
     <div class="submenu">
@@ -121,129 +171,139 @@ canvas{width:100%!important;height:260px!important;}
   </div>
 </div>
 
-<!-- SECTION INFÉRIEURE : GRAPHIQUE DYNAMIQUE -->
+<!-- === LOWER PANEL === -->
 <div class="dashboard">
   <div class="section">
-    <h2>📈 Game Time Modelized – Brother in Arm + Sum War Power</h2>
+    <h2>📈 GAME TIME MODELIZED – BROTHER IN ARM + SUM WAR POWER</h2>
+
     <div class="tabs">
       <button class="tab active" id="weeklyBtn">WEEKLY</button>
       <button class="tab" id="voidBtn">VOID</button>
     </div>
+
     <canvas id="chart"></canvas>
-    <div class="summary" id="summary">Chargement des données...</div>
+    <div class="summary" id="summary">Loading data...</div>
   </div>
 </div>
 
+<footer>© JTT Alliance Management V3.5</footer>
+
 <script>
-/* ========== 1️⃣ JAUGE ALLIANCE ========== */
-const SHEET_ID="1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs";
-const GID="1508042555";
-const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`;
+/* ===== 1. Alliance gauge ===== */
 async function loadStats(){
+  const SHEET_ID="1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs";
+  const GID="1508042555";
+  const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`;
   try{
     const res=await fetch(CSV_URL);
     const text=await res.text();
     const rows=text.trim().split("\n").map(r=>r.split(",").map(c=>c.replace(/(^"|"$)/g,"").trim()));
-    const second=rows[1]||[];
-    const numbers=second.filter(x=>/^\d+$/.test(x));
-    const current=parseInt(numbers[0]||"0");
-    const total=parseInt(numbers[1]||"1");
+    const numbers=(rows[1]||[]).filter(x=>/^[0-9]+$/.test(x));
+    const current=parseInt(numbers[0]||"0"),total=parseInt(numbers[1]||"1");
     const pct=Math.min(Math.round((current/total)*100),100);
-    document.getElementById("count").textContent=current;
-    document.getElementById("total").textContent=total;
-    document.getElementById("fillBar").style.width=pct+"%";
-    document.getElementById("fillText").textContent=pct+"% complété";
-  }catch(err){
-    console.error("Erreur chargement:",err);
-    document.getElementById("fillText").textContent="❌ Erreur";
+    fillBar.style.width=pct+"%";
+    fillText.textContent=pct+"% completed";
+    count.textContent=current;total.textContent=total;
+  }catch(e){
+    fillText.textContent="❌ Error loading";
   }
 }
 loadStats();
 
-/* ========== 2️⃣ GRAPHIQUE ========== */
+/* ===== 2. Chart initialization ===== */
 const ctx=document.getElementById('chart').getContext('2d');
 const D={weekly:{power:[],players:[]},void:{power:[],players:[]}};
 const gradPower=ctx.createLinearGradient(0,0,0,300);
 gradPower.addColorStop(0,"rgba(0,255,255,0.25)");
 gradPower.addColorStop(1,"rgba(0,155,255,0)");
 const gradPlayers=ctx.createLinearGradient(0,0,0,300);
-gradPlayers.addColorStop(0,"rgba(179,136,255,0.25)");
-gradPlayers.addColorStop(1,"rgba(179,136,255,0.05)");
+gradPlayers.addColorStop(0,"rgba(0,255,255,0.25)");
+gradPlayers.addColorStop(1,"rgba(0,255,255,0.05)");
 const chart=new Chart(ctx,{
   type:'line',
   data:{
-    labels:Array.from({length:25},(_,i)=> i<24? `${i}h` : "24h"),
+    labels:Array.from({length:25},(_,i)=>i<24?`${i}h`:"24h"),
     datasets:[
       {label:"💪🌐 Sum War Power (M)",data:[],borderColor:'#00ffee',
-       backgroundColor:gradPower,borderWidth:3,fill:true,tension:0.35,
-       pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#00ffe0',yAxisID:'y'},
-      {label:"👥 Brothers in Arm (Players)",data:[],borderColor:'#b388ff',
-       backgroundColor:gradPlayers,borderWidth:2,fill:true,tension:0.35,
-       pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#b388ff',yAxisID:'y1'}
+        backgroundColor:gradPower,borderWidth:3,fill:true,tension:0.35,
+        pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#00ffe0',yAxisID:'y'},
+      {label:"👥 Brothers in Arm (Players)",data:[],borderColor:'#00cfff',
+        backgroundColor:gradPlayers,borderWidth:2,fill:true,tension:0.35,
+        pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#00dfff',yAxisID:'y1'}
     ]
   },
   options:{
-    responsive:true,interaction:{mode:'index',intersect:false},
-    animation:{duration:800,easing:'easeInOutQuart'},
-    plugins:{legend:{labels:{color:'#00eaff',font:{size:11}}},
+    responsive:true,maintainAspectRatio:true,
+    interaction:{mode:'index',intersect:false},
+    animation:{duration:900,easing:'easeInOutQuart'},
+    plugins:{legend:{labels:{color:'#00eaff',font:{size:10}}},
     tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)}`}}},
     scales:{
       y:{beginAtZero:true,ticks:{color:'#00ffff'},grid:{color:'rgba(0,255,255,0.08)'}},
-      y1:{position:'right',beginAtZero:true,ticks:{color:'#b388ff'},grid:{drawOnChartArea:false}},
-      x:{ticks:{color:'#5dd9ff'},grid:{color:'rgba(0,255,255,0.08)'}}
+      y1:{position:'right',beginAtZero:true,ticks:{color:'#00ffff'},grid:{drawOnChartArea:false}},
+      x:{ticks:{color:'#66eaff'},grid:{color:'rgba(0,255,255,0.05)'}}
     }
   }
 });
+
 const summary=document.getElementById('summary');
-function currentHourIndexUTC0(){return new Date().getUTCHours()%24;}
+function currentUTC(){return new Date().getUTCHours()%24;}
 function updateSummary(type){
-  const h=currentHourIndexUTC0();
+  const h=currentUTC();
   const p=D[type].power[h]||0;
   const b=D[type].players[h]||0;
   summary.textContent=`🕘 ${h}h UTC • 💪 Power: ${p.toFixed(1)} M ⚡ – 👥 Players: ${b}`;
-  chart.data.datasets.forEach(ds=>{ds.pointRadius=ds.data.map((_,i)=>i===h?6:3);});
 }
-function switchData(type){
-  chart.data.datasets[0].data=D[type].power;
-  chart.data.datasets[1].data=D[type].players;
-  chart.update();updateSummary(type);
+
+/* Halo animation only (no refresh cost) */
+let haloPulse=0;
+function glowFrame(){
+  haloPulse+=0.03;
+  const intensity=8+5*Math.sin(haloPulse);
+  ctx.canvas.style.boxShadow=`0 0 ${intensity}px #00eaff`;
+  requestAnimationFrame(glowFrame);
 }
-let pulse=0;function animate(){
-  pulse+=0.04;
-  const glow=0.5+Math.sin(pulse)*0.5;
-  chart.data.datasets[0].borderColor=`rgba(0,255,255,${0.55+glow*0.3})`;
-  chart.data.datasets[1].borderColor=`rgba(179,136,255,${0.55+glow*0.3})`;
-  chart.update('none');requestAnimationFrame(animate);
-}
-animate();
+glowFrame();
+
+/* ===== 3. Data loading ===== */
 async function fetchSheetData(gid){
-  const sheetId='1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs';
-  const rangePlayers='C127:AA127';
-  const rangePower='C189:AA189';
-  async function fetchRange(r){
-    const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}&range=${r}`;
+  const sheet='1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs';
+  const rangePlayers='C127:AA127',rangePower='C189:AA189';
+  async function rangeFetch(r){
+    const url=`https://docs.google.com/spreadsheets/d/${sheet}/gviz/tq?tqx=out:json&gid=${gid}&range=${r}`;
     const res=await fetch(url);
     const txt=await res.text();
     const json=JSON.parse(txt.substring(47).slice(0,-2));
     return json.table.rows[0].c.map(c=>{
       if(!c||c.v===null)return 0;
-      const v=parseFloat(c.v.toString().replace(',','.').replace(/[^\d.-]/g,''));
+      const v=parseFloat(String(c.v).replace(',','.').replace(/[^\d.-]/g,''));
       return isNaN(v)?0:v;
     });
   }
   try{
-    const [players,power]=await Promise.all([fetchRange(rangePlayers),fetchRange(rangePower)]);
+    const [players,power]=await Promise.all([rangeFetch(rangePlayers),rangeFetch(rangePower)]);
     if(power.length===24){power.push(power[0]);players.push(players[0]);}
     return {players,power};
-  }catch(e){return{players:[],power:[]};}
+  }catch{return{players:[],power:[]};}
 }
-async function loadJTTData(){
+
+async function initData(){
   const [weekly,voidD]=await Promise.all([fetchSheetData(0),fetchSheetData(1434850621)]);
   if(Math.max(...weekly.power)>1000)weekly.power=weekly.power.map(v=>v/1_000_000);
   if(Math.max(...voidD.power)>1000)voidD.power=voidD.power.map(v=>v/1_000_000);
-  D.weekly=weekly;D.void=voidD;setTimeout(()=>switchData('weekly'),200);
+  D.weekly=weekly;D.void=voidD;
+  switchData('weekly');
 }
-loadJTTData();
+initData();
+
+function switchData(type){
+  chart.data.datasets[0].data=D[type].power;
+  chart.data.datasets[1].data=D[type].players;
+  chart.update();
+  updateSummary(type);
+}
+
+/* ===== 4. Tabs ===== */
 weeklyBtn.onclick=()=>{weeklyBtn.classList.add('active');voidBtn.classList.remove('active');switchData('weekly');};
 voidBtn.onclick=()=>{voidBtn.classList.add('active');weeklyBtn.classList.remove('active');switchData('void');};
 </script>
