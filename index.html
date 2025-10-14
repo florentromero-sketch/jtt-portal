@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.7, maximum-scale=1.7, user-scalable=no">
 
-<title>🛰 JTT Alliance Management 3.6</title>
+<title>🛰 JTT Alliance Management V3.6 🛰</title>
 <meta name="theme-color" content="#00eaff">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -23,7 +23,6 @@
 body{
   margin:0;padding:0;
   font-family:"Orbitron",sans-serif;
-  font-size:1.05rem;line-height:1.4em;
   background:radial-gradient(circle at 20% 20%,#081625 0%,#040d17 100%);
   color:var(--text-light);
   display:flex;flex-direction:column;align-items:center;
@@ -31,22 +30,22 @@ body{
 }
 h1{
   color:var(--blue-main);
+  text-align:center;
   animation:glow 3s ease-in-out infinite;
   font-size:clamp(1rem,3vw,1.2rem);
-  margin:18px 0;text-align:center;text-transform:uppercase;
+  margin:18px 0;text-transform:uppercase;
 }
 @keyframes glow{
   0%,100%{text-shadow:0 0 6px var(--blue-main),0 0 10px var(--blue-main);}
   50%{text-shadow:0 0 18px var(--blue-main),0 0 26px var(--blue-main);}
 }
 
-/* ===== Panels ===== */
 .dashboard{
   width:96%;max-width:500px;
   background:linear-gradient(180deg,rgba(8,22,37,.95),rgba(4,13,23,.95));
   border:1.5px solid var(--blue-main);
   border-radius:12px;
-  box-shadow:inset 0 0 20px rgba(0,239,255,0.15),0 0 25px rgba(0,239,255,0.3);
+  box-shadow:inset 0 0 20px rgba(0,239,255,.15),0 0 25px rgba(0,239,255,.3);
   padding:20px;margin-bottom:22px;
 }
 .section{
@@ -62,7 +61,6 @@ h1{
   font-size:0.8rem;text-transform:uppercase;
 }
 
-/* ===== Progress bar ===== */
 .jauge-container{
   background:rgba(5,25,30,.4);
   border:1px solid var(--blue-dark);
@@ -78,14 +76,15 @@ h1{
   font-size:0.85em;color:#fff;text-shadow:0 0 6px var(--blue-main);
 }
 
-/* ===== Links & Button ===== */
 .submenu{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:12px;}
 .link{
   flex:1 1 45%;
   background:linear-gradient(90deg,var(--blue-dark),var(--blue-main));
   border-radius:8px;color:#fff;text-align:center;text-decoration:none;
-  padding:10px 12px;font-weight:700;font-size:clamp(0.8rem,3.4vw,1rem);
-  white-space:nowrap;box-shadow:0 0 10px rgba(0,234,255,.4);
+  padding:10px 12px;font-weight:700;
+  font-size:clamp(0.8rem,3.4vw,1rem);
+  white-space:nowrap;
+  box-shadow:0 0 10px rgba(0,234,255,.4);
   transition:.25s;
 }
 .link:hover{transform:scale(1.05);box-shadow:0 0 16px var(--blue-main);}
@@ -97,7 +96,6 @@ h1{
 }
 .btn-sync:hover{background:var(--blue-main);color:#fff;box-shadow:0 0 10px var(--blue-main);}
 
-/* ===== Chart improvements ===== */
 .tabs{display:flex;justify-content:center;gap:10px;margin:12px 0;}
 .tab{
   background:linear-gradient(90deg,#05283b,#07334a);
@@ -169,22 +167,34 @@ footer{text-align:center;font-size:0.75rem;opacity:0.6;color:#00b7ff;margin:1rem
 <footer>© JTT Alliance Management V3.6</footer>
 
 <script>
-/* --- Gauge --- */
+/* --- Alliance gauge: corrected member count --- */
 async function loadStats(){
-  try{
-    const res=await fetch(`https://docs.google.com/spreadsheets/d/1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs/gviz/tq?tqx=out:csv&gid=1508042555`);
-    const text=await res.text();
-    const rows=text.trim().split("\n").map(r=>r.split(","));
-    const nums=(rows[1]||[]).filter(x=>/^[0-9]+$/.test(x));
-    const cur=parseInt(nums[0]||"0"),tot=parseInt(nums[1]||"1");
-    const pct=Math.min(Math.round(cur/tot*100),100);
-    fillBar.style.width=pct+"%";fillText.textContent=pct+"% completed";
-    count.textContent=cur;total.textContent=tot;
-  }catch(e){fillText.textContent="❌ Error";}
+  try {
+    const res = await fetch("https://docs.google.com/spreadsheets/d/1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs/gviz/tq?tqx=out:csv&gid=1508042555");
+    const text = await res.text();
+    const rows = text.trim().split("\n").map(r => r.split(",").map(c => c.replace(/(^"|"$)/g,"")));
+
+    // ✅ Correction: parse all numeric values even with spaces or symbols
+    const cleanNums = (rows[1] || [])
+      .map(v => parseInt(String(v).replace(/\D/g,"") || "0", 10))
+      .filter(n => !isNaN(n) && n > 0);
+
+    const cur = cleanNums[0] || 0;
+    const tot = cleanNums[1] || 100;
+    const pct = Math.min(Math.round((cur/tot)*100),100);
+
+    fillBar.style.width = pct + "%";
+    fillText.textContent = pct + "% completed";
+    count.textContent = cur;
+    total.textContent = tot;
+  } catch (e) {
+    console.error("loadStats() error :", e);
+    fillText.textContent = "❌ Data Error";
+  }
 }
 loadStats();
 
-/* --- Chart setup --- */
+/* --- Chart setup (identique) --- */
 const ctx=document.getElementById('chart').getContext('2d');
 const dataSets={weekly:{power:[],players:[]},void:{power:[],players:[]}};
 const gradient=ctx.createLinearGradient(0,0,0,200);
@@ -227,7 +237,7 @@ const chart=new Chart(ctx,{
   }
 });
 
-/* --- Data fetch --- */
+/* --- Google Sheets data --- */
 async function getRange(gid,range){
   const u=`https://docs.google.com/spreadsheets/d/1QMna4_NnamMeNUvU69dOOqwhIL07QgLlZ5mrKTU3xZs/gviz/tq?tqx=out:json&gid=${gid}&range=${range}`;
   const res=await fetch(u);const txt=await res.text();
