@@ -1,5 +1,9 @@
-// 🛰️ JTT Portal — Service Worker V3.5
-const CACHE_NAME = 'jtt-portal-v3-5'; // <— nouveau nom de cache
+// 🛰️ JTT Portal — Service Worker V3.7
+// Objectif : nettoyage complet des anciens caches + affichage unique
+
+const CACHE_NAME = 'jtt-portal-v3-7';
+
+// 🗂️ Liste des fichiers essentiels en cache
 const URLS_TO_CACHE = [
   '/jtt-portal/',
   '/jtt-portal/index.html',
@@ -8,55 +12,55 @@ const URLS_TO_CACHE = [
   '/jtt-portal/icon-512.png'
 ];
 
-// ===== Installation & mise en cache initial =====
+// ===== Installation =====
 self.addEventListener('install', event => {
-  console.log('🛰️ [SW] Installation JTT Portal V3.5...');
+  console.log('🛰️ [SW V3.7] Installation en cours...');
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('📦 [SW] Mise en cache initiale :', URLS_TO_CACHE);
-      return cache.addAll(URLS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(URLS_TO_CACHE))
   );
-  self.skipWaiting(); // activation immédiate du nouveau SW
+  self.skipWaiting(); // activation immédiate
 });
 
-// ===== Activation : suppresion des vieux caches =====
+// ===== Activation : suppression des anciens caches =====
 self.addEventListener('activate', event => {
-  console.log('♻️ [SW] Activation JTT Portal V3.5');
+  console.log('♻️ [SW V3.7] Activation + nettoyage des anciens caches');
   event.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
         keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => {
-            console.log('🧹 Suppression ancien cache :', key);
-            return caches.delete(key);
+          .filter(k => k.startsWith('jtt-portal-') && k !== CACHE_NAME)
+          .map(k => {
+            console.log('🧹 Suppression ancien cache :', k);
+            return caches.delete(k);
           })
       );
     })
   );
-  self.clients.claim(); // prend le contrôle sans rechargement
+  self.clients.claim(); // prend le contrôle immédiatement
 });
 
-// ===== Interception des requêtes =====
+// ===== Interception des requêtes réseau =====
 self.addEventListener('fetch', event => {
+  // Ne pas traiter les requêtes "chrome-extension" ou externes
+  if (!event.request.url.startsWith(self.location.origin)) return;
+
   event.respondWith(
-    caches.match(event.request).then(response => {
-      // ⚙️ 1. Si présent en cache → retourne‑le
-      // ⚙️ 2. Sinon → télécharge depuis le réseau
-      return (
-        response ||
-        fetch(event.request).then(fetchRes => {
-          // Stockage opportuniste des nouvelles ressources
-          return caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, fetchRes.clone());
-            return fetchRes;
-          });
-        }).catch(() => {
-          // Optionnel : renvoyer un fallback hors‑ligne
+    caches.match(event.request).then(cached => {
+      if (cached) {
+        // Réponse depuis le cache
+        return cached;
+      }
+      // Sinon, récupération réseau + ajout au cache
+      return fetch(event.request)
+        .then(response => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          return response;
         })
-      );
+        .catch(err => {
+          console.warn('⚠️ [SW] Fetch échoué :', err);
+          // Aucun fallback ici → laisse le navigateur gérer
+        });
     })
   );
 });
-
