@@ -21,10 +21,9 @@
   ],
   "orientation": "portrait",
   "categories": ["utilities", "productivity"],
-  "description": "JTT Alliance Portal Application",
+  "description": "JTT Portal Application",
   "lang": "fr",
   "dir": "ltr",
   "prefer_related_applications": false,
-  "scope": "/",
-  "id": "jtt-portal-v1"
+  "scope": "/"
 }
