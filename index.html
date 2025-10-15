@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>🛰 JTT Data Portal 🛰</title>
+<title>🛰 JTT Data Portal 🛰</title>
 
-<!-- 🔹 PWA META -->
+<!-- 🔹 PWA META -->
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#1f8cff" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 
-<!-- 🔹 DESIGN ORIGINAL BLEU‑NÉON -->
+<!-- 🔹 DESIGN ORIGINAL BLEU‑NÉON -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
@@ -46,7 +46,7 @@ footer{color:#006e8a;font-size:.8rem;margin:1.5rem 0;}
   z-index:9999;color:#00caff;font-size:1.2rem;letter-spacing:1px;transition:opacity .5s;
 }
 
-/* 🎯 NOUVEAU CSS GRAPHIQUE RESPONSIVE */
+/* 🎯 NOUVEAU CSS GRAPHIQUE RESPONSIVE */
 canvas {
   display:block;
   width:100%!important;
@@ -67,25 +67,25 @@ canvas {
 </head>
 
 <body>
-<div id="splashScreen">🛰 JTT data Loading...</div>
+<div id="splashScreen">🛰 JTT data Loading...</div>
 
-<h1>📡 JTT Data Portal</h1>
+<h1>📡 JTT Data Portal</h1>
 
 <div class="panel">
-  <h2>📄 FEUILLE : STATS ALLIANCE</h2>
-  <p>Member census. Data auto‑updated.</p>
+  <h2>📄 FEUILLE : STATS ALLIANCE</h2>
+  <p>Member census. Data auto‑updated.</p>
   <div class="progress-container">
     <div id="fillBar" class="progress-bar"><span id="fillText">Loading…</span></div>
   </div>
-  <p class="stat-line">Membres enregistrés : <span id="count">--</span> / <span id="total">--</span></p>
-  <a href="#" class="btn">🧾 New Registration</a>
-  <a href="#" class="btn">📊 JTT Data System</a>
-  <a href="#" class="btn">🎯 My Personal Link</a>
-  <a href="#" class="btn">🔁 Refresh</a>
+  <p class="stat-line">Membres enregistrés : <span id="count">--</span> / <span id="total">--</span></p>
+  <a href="#" class="btn">🧾 New Registration</a>
+  <a href="#" class="btn">📊 JTT Data System</a>
+  <a href="#" class="btn">🎯 My Personal Link</a>
+  <a href="#" class="btn">🔁 Refresh</a>
 </div>
 
 <div class="graph">
-  <h2>📈 GAME TIME MODELIZED – BROTHER IN ARM + SUM WAR POWER</h2>
+  <h2>📈 GAME TIME MODELIZED – BROTHER IN ARM + SUM WAR POWER</h2>
   <div class="tabs">
     <button class="tab active" id="weeklyBtn">WEEKLY</button>
     <button class="tab" id="voidBtn">VOID</button>
@@ -94,7 +94,7 @@ canvas {
   <div class="summary" id="summary">Loading data...</div>
 </div>
 
-<footer>© JTT Alliance Management V3.6</footer>
+<footer>© JTT Alliance Management V3.6</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -117,7 +117,7 @@ async function loadStats(){
    count.textContent=cur; total.textContent=tot;
  }catch(e){
    console.error("loadStats() error:",e);
-   fillText.textContent="❌ Data Error";
+   fillText.textContent="❌ Data Error";
  }
 }
 loadStats();
@@ -136,12 +136,12 @@ const chart=new Chart(ctx,{
  data:{
   labels:Array.from({length:25},(_,i)=>i<24?`${i}h`:"24h"),
   datasets:[
-   {label:"💪 Sum War Power (M)",data:[],borderColor:'#00ffee',backgroundColor:gradient,borderWidth:2,tension:.25,fill:true,pointRadius:2,hoverRadius:4,pointBackgroundColor:'#00ffe0',yAxisID:'y'},
-   {label:"👥 Brothers in Arm (Players)",data:[],borderColor:'#00bfff',backgroundColor:"rgba(0,255,255,.08)",borderWidth:1.8,tension:.25,fill:true,pointRadius:2,hoverRadius:4,yAxisID:'y1'}
+   {label:"💪 Sum War Power (M)",data:[],borderColor:'#00ffee',backgroundColor:gradient,borderWidth:2,tension:.25,fill:true,pointRadius:2,hoverRadius:4,pointBackgroundColor:'#00ffe0',yAxisID:'y'},
+   {label:"👥 Brothers in Arm (Players)",data:[],borderColor:'#00bfff',backgroundColor:"rgba(0,255,255,.08)",borderWidth:1.8,tension:.25,fill:true,pointRadius:2,hoverRadius:4,yAxisID:'y1'}
   ]},
  options:{
   responsive:true,
-  maintainAspectRatio:false,  // ✅ désactivation pour ajustement fluide
+  maintainAspectRatio:false,  // ✅ désactivation pour ajustement fluide
   layout:{padding:{left:5,right:5,top:5,bottom:5}},
   plugins:{
     legend:{position:'bottom',labels:{color:'#00eaff',font:{size:9}}},
@@ -180,7 +180,7 @@ function updateSummary(mode){
  const h=(new Date()).getUTCHours()%24;
  const p=dataSets[mode].power[h]||0;
  const b=dataSets[mode].players[h]||0;
- summary.textContent=`🕘 ${h}h UTC – Power ${p.toFixed(1)} M ⚡ Players ${b}`;
+ summary.textContent=`🕘 ${h}h UTC – Power ${p.toFixed(1)} M ⚡ Players ${b}`;
 }
 const weeklyBtn=document.getElementById('weeklyBtn'),
       voidBtn=document.getElementById('voidBtn'),
@@ -198,8 +198,8 @@ window.addEventListener('load',()=>{
 /* ------- Service Worker ------- */
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/jtt-portal/service-worker.js')
-  .then(()=>console.log('✅ Service Worker enregistré'))
-  .catch(e=>console.error('❌ SW Erreur',e));
+  .then(()=>console.log('✅ Service Worker enregistré'))
+  .catch(e=>console.error('❌ SW Erreur',e));
 }
 </script>
 </body>
