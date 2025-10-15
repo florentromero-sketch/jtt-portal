@@ -4,13 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.7, maximum-scale=1.7, user-scalable=no">
 
-<title>🛰 JTT Alliance Management V3.6 🛰</title>
+<title>🛰 JTT portal🛰</title>
 <meta name="theme-color" content="#00eaff">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta name="theme-color" content="#00eaff">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(registration => {
+        console.log('Service Worker registered');
+      })
+      .catch(err => {
+        console.log('Service Worker registration failed:', err);
+      });
+  });
+}
+</script>
 
 <style>
 :root{
