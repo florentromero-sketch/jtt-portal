@@ -1,29 +1,21 @@
 {
-  "name": "JTT Portal",
-  "short_name": "JTT Portal",
-  "start_url": "/jtt-portal/index.html",
+  "name": "JTT Alliance Management V3.6",
+  "short_name": "JTT Portal",
+  "start_url": "/jtt-portal/",
+  "scope": "/jtt-portal/",
   "display": "standalone",
-  "background_color": "#010205",
-  "theme_color": "#00eaff",
+  "background_color": "#000000",
+  "theme_color": "#1f8cff",
   "icons": [
-    { 
-      "src": "/jtt-portal/icon-192.png", 
-      "sizes": "192x192", 
+    {
+      "src": "icon-192.png",
       "type": "image/png",
-      "purpose": "any maskable" 
+      "sizes": "192x192"
     },
-    { 
-      "src": "/jtt-portal/icon-512.png", 
-      "sizes": "512x512", 
+    {
+      "src": "icon-512.png",
       "type": "image/png",
-      "purpose": "any maskable" 
+      "sizes": "512x512"
     }
-  ],
-  "orientation": "portrait",
-  "categories": ["utilities", "productivity"],
-  "description": "JTT Portal Application",
-  "lang": "fr",
-  "dir": "ltr",
-  "prefer_related_applications": false,
-  "scope": "/jtt-portal/"
+  ]
 }
